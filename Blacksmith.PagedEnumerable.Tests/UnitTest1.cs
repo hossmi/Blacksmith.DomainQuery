@@ -1,6 +1,11 @@
+using Blacksmith.PagedEnumerable.Exceptions;
 using Blacksmith.PagedEnumerable.Extensions;
+using Blacksmith.PagedEnumerable.Localization;
 using Blacksmith.PagedEnumerable.Models;
+using Blacksmith.PagedEnumerable.Services;
 using Blacksmith.PagedEnumerable.Tests.Contexts;
+using Blacksmith.PagedEnumerable.Tests.Models;
+using Blacksmith.Validations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,14 +17,17 @@ namespace Blacksmith.PagedEnumerable.Tests
     public class UnitTest1
     {
         private readonly TestContext context;
+        private readonly IPagedEnumerableBuilder pagedEnumerableBuilder;
 
         public UnitTest1()
         {
             this.context = prv_getContext();
+            IPagedEnumerableStrings strings = new EnPagedEnumerableStrings();
+            this.pagedEnumerableBuilder = new DefaultPagedEnumerableBuilder(strings);
         }
 
         [Fact]
-        public void test_usual_pagination()
+        public void usual_pagination()
         {
             IPagedEnumerable<User> users;
             IList<User> listedUsers;
@@ -40,7 +48,7 @@ namespace Blacksmith.PagedEnumerable.Tests
         }
 
         [Fact]
-        public void test_default_pagination()
+        public void default_pagination()
         {
             IPagedEnumerable<User> users;
             IList<User> listedUsers;
@@ -57,6 +65,44 @@ namespace Blacksmith.PagedEnumerable.Tests
             Assert.Equal("Narciso", listedUsers[0].Name);
             Assert.Equal("Tronco", listedUsers[4].Name);
         }
+
+        [Fact]
+        public void mapped_pagination()
+        {
+            IPagedEnumerable<UserDetails, UserDetailsColumns> users;
+            IList<User> listedUsers;
+
+            users = prv_getUserDetails(this.context)
+                ;
+            
+
+            Assert.Equal(5, users.TotalCount);
+            Assert.Equal(5, users.Count());
+
+            listedUsers = users.ToList();
+            Assert.Equal(5, listedUsers.Count);
+            Assert.Equal("Narciso", listedUsers[0].Name);
+            Assert.Equal("Tronco", listedUsers[4].Name);
+        }
+
+        private IPagedEnumerable<UserDetails, UserDetailsColumns> prv_getUserDetails(TestContext context)
+        {
+            return this.pagedEnumerableBuilder
+                .buildFor(this.context.UserRoles, prv_orderMap, prv_map);
+        }
+
+        private static UserDetails prv_map(UserRole userRole)
+        {
+            return new UserDetails
+            {
+                UserName = userRole.User.Name,
+                RoleName = userRole.Role.Name,
+                Active = userRole.Active,
+            };
+        }
+
+        private static void prv_orderMap(UserDetailsColumns column, OrderDirection direction, )
+
 
         private static TestContext prv_getContext()
         {

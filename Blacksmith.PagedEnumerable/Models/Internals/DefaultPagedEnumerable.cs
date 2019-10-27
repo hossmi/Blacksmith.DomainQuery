@@ -35,7 +35,7 @@ namespace Blacksmith.PagedEnumerable.Models.Internals
             return prv_enumerate();
         }
 
-        protected virtual IEnumerator<T> prv_enumerate()
+        private IEnumerator<T> prv_enumerate()
         {
             throw new NotImplementedException();
         }
