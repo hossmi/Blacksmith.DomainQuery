@@ -1,13 +1,10 @@
-using Blacksmith.PagedEnumerable.Exceptions;
-using Blacksmith.PagedEnumerable.Extensions;
 using Blacksmith.PagedEnumerable.Localization;
 using Blacksmith.PagedEnumerable.Models;
-using Blacksmith.PagedEnumerable.Services;
+using Blacksmith.PagedEnumerable.Extensions;
 using Blacksmith.PagedEnumerable.Tests.Contexts;
+using Blacksmith.PagedEnumerable.Tests.DomainQueries;
 using Blacksmith.PagedEnumerable.Tests.Models;
-using Blacksmith.Validations;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -17,49 +14,43 @@ namespace Blacksmith.PagedEnumerable.Tests
     public class UnitTest1
     {
         private readonly TestContext context;
+        private readonly IDomainEnumerableStrings strings;
 
         public UnitTest1()
         {
             this.context = prv_getContext();
-            IPagedEnumerableStrings strings = new EnPagedEnumerableStrings();
+            this.strings = new EnDomainEnumerableStrings();
         }
 
         [Fact]
         public void mapped_pagination()
         {
-            IPagedEnumerable<UserDetails, UserDetailsColumns> users;
-            IList<User> listedUsers;
+            IDomainEnumerable<UserDetails, UserDetailsColumns> usersQuery;
+            IList<UserDetails> listedUsers;
 
-            users = prv_getUserDetails(this.context);
+            usersQuery = prv_getUserDetails(this.context, this.strings);
             
+            Assert.Equal(4, usersQuery.TotalCount);
+            Assert.Equal(4, usersQuery.Count());
 
-            Assert.Equal(5, users.TotalCount);
-            Assert.Equal(5, users.Count());
+            usersQuery
+                .addOrderSettings(UserDetailsColumns.RoleName, OrderDirection.Descending)
+                .addOrderSettings(UserDetailsColumns.UserName, OrderDirection.Ascending);
 
-            listedUsers = users.ToList();
-            Assert.Equal(5, listedUsers.Count);
-            Assert.Equal("Narciso", listedUsers[0].Name);
-            Assert.Equal("Tronco", listedUsers[4].Name);
+            listedUsers = usersQuery.ToList();
+            Assert.Equal(4, listedUsers.Count);
+
+            Assert.Equal("Reader", listedUsers[0].RoleName);
+            Assert.Equal("Narciso", listedUsers[0].UserName);
+
+            Assert.Equal("Admin", listedUsers[3].RoleName);
+            Assert.Equal("Root", listedUsers[3].UserName);
         }
 
-        private IPagedEnumerable<UserDetails, UserDetailsColumns> prv_getUserDetails(TestContext context)
+        private static IDomainEnumerable<UserDetails, UserDetailsColumns> prv_getUserDetails(TestContext context, IDomainEnumerableStrings strings)
         {
-            return this.pagedEnumerableBuilder
-                .buildFor<UserRole, UserDetails, UserDetailsColumns>(this.context.UserRoles, prv_orderMap, prv_map);
+            return new UserDetailsQuery(context.UserRoles, strings);
         }
-
-        private static UserDetails prv_map(UserRole userRole)
-        {
-            return new UserDetails
-            {
-                UserName = userRole.User.Name,
-                RoleName = userRole.Role.Name,
-                Active = userRole.Active,
-            };
-        }
-
-
-
 
         private static TestContext prv_getContext()
         {
@@ -81,21 +72,51 @@ namespace Blacksmith.PagedEnumerable.Tests
         {
             if(false == context.Users.Any())
             {
-                context.Users.Add(new User { Name = "Narciso" });
+                User narcisoUser;
+                Role adminRole, editorRole, readerRole;
+
+                narcisoUser = new User { Name = "Narciso" };
+
+                context.Users.Add(narcisoUser);
                 context.Users.Add(new User { Name = "Florencio" });
                 context.Users.Add(new User { Name = "Rosa" });
                 context.Users.Add(new User { Name = "Pepe" });
                 context.Users.Add(new User { Name = "Tonco" });
                 context.SaveChanges();
 
-                context.Roles.Add(new Role { Name = "Reader" });
-                context.Roles.Add(new Role { Name = "Editor" });
-                context.Roles.Add(new Role { Name = "Admin" });
+                adminRole = new Role { Name = "Admin" };
+                context.Roles.Add(adminRole);
+                editorRole = new Role { Name = "Editor" };
+                context.Roles.Add(editorRole);
+                readerRole = new Role { Name = "Reader" };
+                context.Roles.Add(readerRole);
                 context.SaveChanges();
 
-                
+                context.UserRoles.Add(new UserRole
+                {
+                    RoleId = readerRole.Id,
+                    UserId = narcisoUser.Id,
+                });
+
+                context.UserRoles.Add(new UserRole
+                {
+                    RoleId = editorRole.Id,
+                    UserId = narcisoUser.Id,
+                });
+
+                context.UserRoles.Add(new UserRole
+                {
+                    RoleId = adminRole.Id,
+                    UserId = narcisoUser.Id,
+                });
+
+                context.UserRoles.Add(new UserRole
+                {
+                    RoleId = adminRole.Id,
+                    User = new User { Name = "Root" },
+                });
+                context.SaveChanges();
             }
-            throw new NotImplementedException();
         }
     }
 }

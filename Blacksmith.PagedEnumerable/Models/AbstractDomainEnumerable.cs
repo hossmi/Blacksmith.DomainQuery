@@ -10,10 +10,10 @@ namespace Blacksmith.PagedEnumerable.Models
 {
     public abstract class AbstractDomainEnumerable<TIn, TOut, TOrder> : IDomainEnumerable<TOut, TOrder>
     {
-        private readonly Asserts assert;
-        private readonly IValidator validate;
+        protected readonly Asserts assert;
+        protected readonly IValidator validate;
+        protected readonly IDomainEnumerableStrings strings;
         private readonly IQueryable<TIn> query;
-        private readonly IDomainEnumerableStrings strings;
         private readonly OrderStack<TOrder> orderStack;
 
         public AbstractDomainEnumerable(IQueryable<TIn> query, IDomainEnumerableStrings strings)
@@ -72,8 +72,8 @@ namespace Blacksmith.PagedEnumerable.Models
             
         }
 
-        protected abstract IOrderedQueryable<TIn> prv_setFirstOrder(IQueryable<TIn> query, TOrder key, OrderDirection value);
-        protected abstract IOrderedQueryable<TIn> prv_setNextOrder(IOrderedQueryable<TIn> orderedQuery, TOrder key, OrderDirection value);
+        protected abstract IOrderedQueryable<TIn> prv_setFirstOrder(IQueryable<TIn> query, TOrder key, OrderDirection direction);
+        protected abstract IOrderedQueryable<TIn> prv_setNextOrder(IOrderedQueryable<TIn> query, TOrder key, OrderDirection direction);
         protected abstract TOut prv_mapToDomain(TIn item);
 
         private static IQueryable<TIn> prv_setOrderSettings(

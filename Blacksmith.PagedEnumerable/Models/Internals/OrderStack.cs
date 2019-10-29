@@ -1,7 +1,6 @@
 ﻿using Blacksmith.PagedEnumerable.Localization;
 using Blacksmith.PagedEnumerable.Models;
 using Blacksmith.Validations;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,7 +37,7 @@ namespace Blacksmith.PagedEnumerable
 
         public void push(TOrder key, OrderDirection direction)
         {
-            throw new NotImplementedException("Check if condition was already added");
+            //throw new NotImplementedException("Check if condition was already added");
             this.orders.Add(new KeyValuePair<TOrder, OrderDirection>(key, direction));
         }
     }
