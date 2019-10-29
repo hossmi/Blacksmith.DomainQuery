@@ -2,10 +2,10 @@
 
 namespace Blacksmith.PagedEnumerable.Models
 {
-    public interface IPagedEnumerable<T, TKey> : IEnumerable<T>
+    public interface IDomainEnumerable<TOut, TOrder> : IEnumerable<TOut>
     {
         int TotalCount { get; }
         IPageSettings Page { get; }
-        IOrderSettings<TKey> Order { get; }
+        IOrderStack<TOrder> Order { get; }
     }
 }

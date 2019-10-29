@@ -8,11 +8,11 @@ namespace Blacksmith.PagedEnumerable
     internal class PageSettings : IPageSettings
     {
         private readonly IValidator validate;
-        private readonly IPagedEnumerableStrings strings;
+        private readonly IDomainEnumerableStrings strings;
         private int current;
         private int size;
 
-        public PageSettings(IValidator validator, IPagedEnumerableStrings strings)
+        public PageSettings(IValidator validator, IDomainEnumerableStrings strings)
         {
             this.validate = validator ?? throw new ArgumentNullException(nameof(validator));
             this.strings = strings ?? throw new ArgumentNullException(nameof(strings));
@@ -39,4 +39,5 @@ namespace Blacksmith.PagedEnumerable
             }
         }
     }
+
 }
