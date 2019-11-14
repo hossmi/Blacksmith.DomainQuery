@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blacksmith.PagedEnumerable\Blacksmith.PagedEnumerable.csproj" />
+    <ProjectReference Include="..\Blacksmith.PagedEnumerable\Blacksmith.DomainQuery.csproj" />
   </ItemGroup>
 
 </Project>
