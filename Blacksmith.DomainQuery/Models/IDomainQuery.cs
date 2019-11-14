@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Blacksmith.DomainQuery.Models
+﻿namespace Blacksmith.DomainQuery.Models
 {
-    public interface IDomainQuery<TOut, TOrder> : IEnumerable<TOut>
+    public interface IDomainQuery<TOut, TOrder> : IPaginatedQuery<TOut>
     {
-        int TotalCount { get; }
-        IPageSettings Page { get; }
         IOrderStack<TOrder> Order { get; }
     }
 }
