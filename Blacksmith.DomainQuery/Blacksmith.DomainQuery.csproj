@@ -10,9 +10,11 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <PackageProjectUrl>https://github.com/hossmi/Blacksmith.PagedEnumerable</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/hossmi/Blacksmith.PagedEnumerable</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/hossmi/Blacksmith.DomainQuery</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hossmi/Blacksmith.DomainQuery</RepositoryUrl>
     <PackageTags>tools enumerables queryables</PackageTags>
+    <Authors>hossmi</Authors>
+    <Company>hossmi</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
