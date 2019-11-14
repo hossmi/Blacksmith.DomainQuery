@@ -1,2 +1,2 @@
-# Enumeration classes
-Set of types for paging and sorting enumerables.
+# Domain Query
+The intention of DomainQuery is to separate and ease paging and sorting task of domain queries.
