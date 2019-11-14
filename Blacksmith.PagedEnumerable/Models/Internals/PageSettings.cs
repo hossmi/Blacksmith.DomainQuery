@@ -1,21 +1,14 @@
-﻿using Blacksmith.PagedEnumerable.Localization;
-using Blacksmith.PagedEnumerable.Models;
-using Blacksmith.Validations;
-using System;
+﻿using System;
 
-namespace Blacksmith.PagedEnumerable
+namespace Blacksmith.DomainQuery.Models.Internals
 {
     internal class PageSettings : IPageSettings
     {
-        private readonly IValidator validate;
-        private readonly IDomainEnumerableStrings strings;
         private int current;
         private int size;
 
-        public PageSettings(IValidator validator, IDomainEnumerableStrings strings)
+        public PageSettings()
         {
-            this.validate = validator ?? throw new ArgumentNullException(nameof(validator));
-            this.strings = strings ?? throw new ArgumentNullException(nameof(strings));
             this.current = 0;
             this.size = int.MaxValue;
         }
@@ -25,7 +18,9 @@ namespace Blacksmith.PagedEnumerable
             get => this.current;
             set
             {
-                this.validate.isTrue(0 <= value, this.strings.Current_page_must_be_greater_or_equal_than_zero);
+                if (value < 0)
+                    throw new ArgumentException("Current page must be greater or equal than zero.", nameof(this.Current));
+
                 this.current = value;
             }
         }
@@ -34,7 +29,9 @@ namespace Blacksmith.PagedEnumerable
             get => this.size;
             set
             {
-                this.validate.isTrue(1 <= value, this.strings.Page_size_must_be_greater_than_zero);
+                if (value < 1)
+                    throw new ArgumentException($"Page size must be greater than zero.", nameof(this.Size));
+
                 this.size = value;
             }
         }

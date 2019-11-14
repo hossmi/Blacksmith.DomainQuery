@@ -1,9 +1,8 @@
-using Blacksmith.PagedEnumerable.Localization;
-using Blacksmith.PagedEnumerable.Models;
 using Blacksmith.PagedEnumerable.Extensions;
 using Blacksmith.PagedEnumerable.Tests.Contexts;
-using Blacksmith.PagedEnumerable.Tests.DomainQueries;
 using Blacksmith.PagedEnumerable.Tests.Models;
+using Blacksmith.PagedEnumerable.Tests.Queries;
+using Blacksmith.PagedEnumerable.Tests.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,42 +13,37 @@ namespace Blacksmith.PagedEnumerable.Tests
     public class UnitTest1
     {
         private readonly TestContext context;
-        private readonly IDomainEnumerableStrings strings;
+        private readonly IUserService userService;
 
         public UnitTest1()
         {
             this.context = prv_getContext();
-            this.strings = new EnDomainEnumerableStrings();
+            this.userService = new UserService(this.context);
         }
 
         [Fact]
         public void mapped_pagination()
         {
-            IDomainEnumerable<UserDetails, UserDetailsColumns> usersQuery;
+            IUserDetailsDomainQuery users;
             IList<UserDetails> listedUsers;
 
-            usersQuery = prv_getUserDetails(this.context, this.strings);
-            
-            Assert.Equal(4, usersQuery.TotalCount);
-            Assert.Equal(4, usersQuery.Count());
+            users = this.userService.getUserDetails();
 
-            usersQuery
-                .addOrderSettings(UserDetailsColumns.RoleName, OrderDirection.Descending)
-                .addOrderSettings(UserDetailsColumns.UserName, OrderDirection.Ascending);
+            Assert.Equal(4, users.TotalCount);
+            Assert.Equal(4, users.Count());
 
-            listedUsers = usersQuery.ToList();
-            Assert.Equal(4, listedUsers.Count);
+            users
+                .addOrderSettings(UserDetailsColumns.Priority, OrderDirection.Descendant)
+                .addOrderSettings(UserDetailsColumns.UserName, OrderDirection.Ascendant)
+                .setPageSettings(1,2);
 
-            Assert.Equal("Reader", listedUsers[0].RoleName);
+            listedUsers = users.ToList();
+            Assert.Equal(2, listedUsers.Count);
+
+            Assert.Equal("Editor", listedUsers[0].RoleName);
             Assert.Equal("Narciso", listedUsers[0].UserName);
-
-            Assert.Equal("Admin", listedUsers[3].RoleName);
-            Assert.Equal("Root", listedUsers[3].UserName);
-        }
-
-        private static IDomainEnumerable<UserDetails, UserDetailsColumns> prv_getUserDetails(TestContext context, IDomainEnumerableStrings strings)
-        {
-            return new UserDetailsQuery(context.UserRoles, strings);
+            Assert.Equal("Reader", listedUsers[1].RoleName);
+            Assert.Equal("Narciso", listedUsers[1].UserName);
         }
 
         private static TestContext prv_getContext()
@@ -84,11 +78,11 @@ namespace Blacksmith.PagedEnumerable.Tests
                 context.Users.Add(new User { Name = "Tonco" });
                 context.SaveChanges();
 
-                adminRole = new Role { Name = "Admin" };
+                adminRole = new Role { Name = "Admin", Priority = 100 };
                 context.Roles.Add(adminRole);
-                editorRole = new Role { Name = "Editor" };
+                editorRole = new Role { Name = "Editor", Priority = 50 };
                 context.Roles.Add(editorRole);
-                readerRole = new Role { Name = "Reader" };
+                readerRole = new Role { Name = "Reader", Priority = 0 };
                 context.Roles.Add(readerRole);
                 context.SaveChanges();
 

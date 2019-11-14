@@ -12,6 +12,9 @@ namespace Blacksmith.PagedEnumerable.Tests.Contexts
         [Required]
         public string Name { get; set; }
 
+        [Required]
+        public int Priority { get; set; }
+
         public ICollection<UserRole> Users { get; set; }
     }
 }

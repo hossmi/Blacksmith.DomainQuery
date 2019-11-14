@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Blacksmith.PagedEnumerable.Models
+namespace Blacksmith.DomainQuery.Models
 {
-    public interface IDomainEnumerable<TOut, TOrder> : IEnumerable<TOut>
+    public interface IDomainQuery<TOut, TOrder> : IEnumerable<TOut>
     {
         int TotalCount { get; }
         IPageSettings Page { get; }

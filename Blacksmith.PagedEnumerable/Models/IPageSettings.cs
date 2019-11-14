@@ -1,4 +1,4 @@
-﻿namespace Blacksmith.PagedEnumerable.Models
+﻿namespace Blacksmith.DomainQuery.Models
 {
     public interface IPageSettings
     {
