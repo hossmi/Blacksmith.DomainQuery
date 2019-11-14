@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Blacksmith.DomainQuery.Models
 {
@@ -42,8 +43,7 @@ namespace Blacksmith.DomainQuery.Models
                     .GetEnumerator();
         }
 
-        protected abstract IOrderedQueryable<TIn> setFirstOrder(IQueryable<TIn> query, TOrder key, OrderDirection direction);
-        protected abstract IOrderedQueryable<TIn> setNextOrder(IOrderedQueryable<TIn> query, TOrder key, OrderDirection direction);
+        protected abstract Expression<Func<TIn, object>> getKeySelector(TOrder key);
         protected abstract TOut mapToDomain(TIn item);
 
         private IQueryable<TIn> getOrderedQuery()
@@ -56,24 +56,25 @@ namespace Blacksmith.DomainQuery.Models
             {
                 IOrderedQueryable<TIn> orderedQuery;
                 KeyValuePair<TOrder, OrderDirection> orderCondition;
+                Expression<Func<TIn, object>> keySelector;
 
                 orderCondition = orders[0];
                 orders.RemoveAt(0);
 
-                orderedQuery = setFirstOrder(this.query, orderCondition.Key, orderCondition.Value)
+                keySelector = getKeySelector(orderCondition.Key) 
                     ?? throw new NullOrderedQueryException(orderCondition.Key);
+
+                orderedQuery = this.query.orderBy(keySelector, orderCondition.Value);
 
                 while (orders.Count > 0)
                 {
-                    IOrderedQueryable<TIn> orderedSubQuery;
-
                     orderCondition = orders[0];
                     orders.RemoveAt(0);
 
-                    orderedSubQuery = setNextOrder(orderedQuery, orderCondition.Key, orderCondition.Value)
+                    keySelector = getKeySelector(orderCondition.Key)
                         ?? throw new NullOrderedQueryException(orderCondition.Key);
 
-                    orderedQuery = orderedSubQuery;
+                    orderedQuery = orderedQuery.thenBy(keySelector, orderCondition.Value);
                 }
 
                 return orderedQuery;

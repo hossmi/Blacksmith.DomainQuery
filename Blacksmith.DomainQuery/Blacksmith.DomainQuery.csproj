@@ -12,7 +12,7 @@
     <FileVersion>1.0.0.0</FileVersion>
     <PackageProjectUrl>https://github.com/hossmi/Blacksmith.PagedEnumerable</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hossmi/Blacksmith.PagedEnumerable</RepositoryUrl>
-    <PackageTags>tools enumerables queryable pagin</PackageTags>
+    <PackageTags>tools enumerables queryables</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

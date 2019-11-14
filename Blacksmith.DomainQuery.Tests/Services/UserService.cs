@@ -5,6 +5,7 @@ using Blacksmith.PagedEnumerable.Tests.Queries;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Blacksmith.PagedEnumerable.Tests.Services
 {
@@ -36,33 +37,16 @@ namespace Blacksmith.PagedEnumerable.Tests.Services
                 };
             }
 
-            protected override IOrderedQueryable<UserRole> setFirstOrder(
-                IQueryable<UserRole> query, UserDetailsColumns key, OrderDirection direction)
+            protected override Expression<Func<UserRole, object>> getKeySelector(UserDetailsColumns key)
             {
                 switch (key)
                 {
                     case UserDetailsColumns.UserName:
-                        return query.orderBy(ur => ur.User.Name, direction);
+                        return ur => ur.User.Name;
                     case UserDetailsColumns.Priority:
-                        return query.orderBy(ur => ur.Role.Priority, direction);
+                        return ur => ur.Role.Priority;
                     case UserDetailsColumns.Active:
-                        return query.orderBy(ur => ur.Active, direction);
-                    default:
-                        throw new ArgumentException("Invalid column", nameof(key));
-                }
-            }
-
-            protected override IOrderedQueryable<UserRole> setNextOrder(
-                IOrderedQueryable<UserRole> query, UserDetailsColumns key, OrderDirection direction)
-            {
-                switch (key)
-                {
-                    case UserDetailsColumns.UserName:
-                        return query.thenBy(ur => ur.User.Name, direction);
-                    case UserDetailsColumns.Priority:
-                        return query.thenBy(ur => ur.Role.Priority, direction);
-                    case UserDetailsColumns.Active:
-                        return query.thenBy(ur => ur.Active, direction);
+                        return ur => ur.Active;
                     default:
                         throw new ArgumentException("Invalid column", nameof(key));
                 }
