@@ -15,9 +15,9 @@ namespace Blacksmith.DomainQuery.Models.Internals
 
         public int Count => this.orders.Count;
 
-        public IEnumerable<KeyValuePair<TOrder, OrderDirection>> Orders => this.orders
-            .ToList()
-            .AsReadOnly();
+        public IList<KeyValuePair<TOrder, OrderDirection>> Orders => this.orders
+            .Select(o => new KeyValuePair<TOrder, OrderDirection>(o.Key, o.Value))
+            .ToList();
 
         public void clear()
         {

@@ -2,7 +2,7 @@
 
 namespace Blacksmith.DomainQuery.Models
 {
-    public interface IPaginatedQuery<TOut> : IEnumerable<TOut>
+    public interface IQuery<TOut> : IEnumerable<TOut>
     {
         int TotalCount { get; }
         IPageSettings Page { get; }
