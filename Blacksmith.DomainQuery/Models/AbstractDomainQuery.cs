@@ -24,7 +24,7 @@ namespace Blacksmith.DomainQuery.Models
         {
             IList<KeyValuePair<TOrder, OrderDirection>> orders;
 
-            orders = this.orderStack.Orders;
+            orders = this.orderStack.ToList();
 
             if (orders.Count > 0)
             {

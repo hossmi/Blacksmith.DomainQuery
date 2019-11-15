@@ -1,6 +1,8 @@
-﻿namespace Blacksmith.DomainQuery.Models
+﻿using System.Collections.Generic;
+
+namespace Blacksmith.DomainQuery.Models
 {
-    public interface IOrderStack<TKey>
+    public interface IOrderStack<TKey> : IEnumerable<KeyValuePair<TKey, OrderDirection>>
     {
         int Count { get; }
 

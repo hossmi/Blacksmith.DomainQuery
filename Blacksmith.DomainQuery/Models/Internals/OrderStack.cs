@@ -1,4 +1,5 @@
 ﻿using Blacksmith.DomainQuery.Exceptions;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,10 +15,6 @@ namespace Blacksmith.DomainQuery.Models.Internals
         }
 
         public int Count => this.orders.Count;
-
-        public IList<KeyValuePair<TOrder, OrderDirection>> Orders => this.orders
-            .Select(o => new KeyValuePair<TOrder, OrderDirection>(o.Key, o.Value))
-            .ToList();
 
         public void clear()
         {
@@ -46,6 +43,23 @@ namespace Blacksmith.DomainQuery.Models.Internals
                 throw new AlreadyAddedOrderKeyException(key);
 
             this.orders.Add(new KeyValuePair<TOrder, OrderDirection>(key, direction));
+        }
+
+        public IEnumerator<KeyValuePair<TOrder, OrderDirection>> GetEnumerator()
+        {
+            return getEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return getEnumerator();
+        }
+
+        private IEnumerator<KeyValuePair<TOrder, OrderDirection>> getEnumerator()
+        {
+            return this.orders
+                .Select(o => new KeyValuePair<TOrder, OrderDirection>(o.Key, o.Value))
+                .GetEnumerator();
         }
     }
 
